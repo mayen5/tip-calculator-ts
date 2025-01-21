@@ -4,7 +4,7 @@ import { MenuItemT, OrderItemT } from '../types/index';
 export const useOrder = () => {
 
     const [ order, setOrder ] = useState<OrderItemT[]>([])
-    const [ total, setTotal ] = useState(0)
+    const [ tip, setTip ] = useState(0)
 
     const addItem = (item: MenuItemT) => {
 
@@ -37,9 +37,17 @@ export const useOrder = () => {
         setOrder(updatedOrder)
     }
 
+    const placeOrder = () => {
+        setOrder([])
+        setTip(0)
+    }
+
     return {
         order,
+        tip,
+        setTip,
         addItem,
         removeItem,
+        placeOrder,
     }
 }

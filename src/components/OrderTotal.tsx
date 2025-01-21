@@ -1,20 +1,22 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { OrderItemT } from '../types'
 import { formatCurrency } from '../helpers'
 
 type OrderTotalProps = {
     order: OrderItemT[],
+    tip: number,
+    placeOrder: () => void,
 }
 
-export const OrderTotal = ({ order }: OrderTotalProps) => {
+export const OrderTotal = ({ order, tip, placeOrder }: OrderTotalProps) => {
 
     const subtotal = useMemo(() => order.reduce((total, orderItem) => {
         return total + (orderItem.quantity * orderItem.price)
     }, 0), [ order ])
 
-    const tip = 0
+    const tipAmount = useMemo(() => subtotal * tip, [ subtotal, tip ])
 
-    const total = subtotal + tip
+    const total = useCallback(() => subtotal + tipAmount, [ subtotal, tipAmount ])
 
     return (
         <>
@@ -27,14 +29,22 @@ export const OrderTotal = ({ order }: OrderTotalProps) => {
 
                 <p>
                     Tip: {' '}
-                    <span className='font-bold'>${formatCurrency(tip)}</span>
+                    <span className='font-bold'>{formatCurrency(tipAmount)}</span>
                 </p>
 
                 <p>
                     Total: {' '}
-                    <span className='font-bold'>${formatCurrency(total)}</span>
+                    <span className='font-bold'>{formatCurrency(total())}</span>
                 </p>
             </div>
+
+            <button
+                className='w-full bg-black p-3 uppercase text-white font-bold mt-10 disabled:opacity-20'
+                disabled={order.length === 0}
+                onClick={placeOrder}
+            >
+                Save order
+            </button>
         </>
     )
 }
